@@ -26,3 +26,26 @@ $ node example/hs.js
 </html>
 ```
 
+# methods
+
+``` js
+var hyperstream = require('hyperstream')
+```
+
+## hyperstream(streamMap)
+
+Return a duplex stream that takes an html stream as input and produces an html
+stream as output, inserting the streams given by `streamMap` at the css selector
+keys.
+
+# install
+
+With [npm](https://npmjs.org) do:
+
+```
+npm install hyperstream
+```
+
+# license
+
+MIT
