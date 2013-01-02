@@ -12,9 +12,7 @@ test('glue html streams from disk', function (t) {
         '#a': fs.createReadStream(__dirname + '/string/a.html'),
         '#b': fs.createReadStream(__dirname + '/string/b.html'),
         'head title': 'beep boop',
-        '#c span': function (node) {
-            node.update(function (html) { return html.toUpperCase() });
-        }
+        '#c span': function (html) { return html.toUpperCase() }
     });
     var rs = fs.createReadStream(__dirname + '/string/index.html');
     
