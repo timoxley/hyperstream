@@ -3,7 +3,7 @@ var hyperstream = require('hyperstream');
 var Stream = require('stream');
 
 var fs = require('fs');
-var expected = fs.readFileSync(__dirname + '/az/expected.html');
+var expected = fs.readFileSync(__dirname + '/az/expected.html', 'utf8');
 
 test('fs stream and a slow stream', function (t) {
     t.plan(1);
