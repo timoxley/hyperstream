@@ -41,7 +41,9 @@ module.exports = function (streamMap) {
             active = true;
             
             output.to(pos);
-            streams[key].resume();
+            process.nextTick(function () {
+                streams[key].resume();
+            });
         }
     });
     
