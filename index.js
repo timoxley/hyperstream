@@ -19,13 +19,12 @@ module.exports = function (streamMap) {
     var stack = [];
     
     Object.keys(streamMap).forEach(function (key) {
-        tr.update(key, function () { onupdate(false); return '' });
+        tr.select(key, function () {
+            onupdate(tr.parser.position);
+        });
         
-        function onupdate (shifted) {
-            if (active) return stack.push((function (pos) {
-                output.to(pos);
-                return onupdate;
-            })(tr.parser.position));
+        function onupdate (pos) {
+            if (active) return stack.push(function () { onupdate(pos) });
             
             streams[key].on('data', function (buf) {
                 output.emit('data', buf);
@@ -34,14 +33,14 @@ module.exports = function (streamMap) {
             streams[key].on('end', function (buf) {
                 active = false;
                 if (stack.length) {
-                    stack.shift()(true)
+                    stack.shift()()
                 }
                 else output.to(-1)
             });
             
             active = true;
             
-            if (!shifted) output.to(tr.parser.position);
+            output.to(pos);
             streams[key].resume();
         }
     });
