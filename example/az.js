@@ -4,9 +4,9 @@ var Stream = require('stream');
 
 var hs = hyperstream({
     '#a': createAzStream(),
-    '#b': fs.createReadStream(__dirname + '/b.html')
+    '#b': fs.createReadStream(__dirname + '/az/b.html')
 });
-var rs = fs.createReadStream(__dirname + '/index.html');
+var rs = fs.createReadStream(__dirname + '/az/index.html');
 rs.pipe(hs).pipe(process.stdout);
 
 function createAzStream () {
