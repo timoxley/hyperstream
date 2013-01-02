@@ -34,11 +34,19 @@ $ node example/hs.js
 var hyperstream = require('hyperstream')
 ```
 
-## hyperstream(streamMap)
+## var hs = hyperstream(streamMap)
 
 Return a duplex stream that takes an html stream as input and produces an html
 stream as output, inserting the streams given by `streamMap` at the css selector
 keys.
+
+If `streamMap` values are strings or functions, update the contents at the css
+selector key with their contents directly without using a stream.
+
+## hs.select(), hs.update(), hs.replace(), hs.remove()
+
+Proxy through methods to the underlying
+[trumpet](https://github.com/substack/node-trumpet) instance.
 
 # install
 
