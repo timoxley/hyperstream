@@ -1,7 +1,6 @@
 var trumpet = require('trumpet');
 var pause = require('pause-stream');
 var duplexer = require('duplexer');
-var concatStream = require('concat-stream');
 
 var upto = require('./lib/upto');
 
