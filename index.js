@@ -1,20 +1,13 @@
 var trumpet = require('trumpet');
-var through = require('through');
 var pause = require('pause-stream');
 var duplexer = require('duplexer');
 var concatStream = require('concat-stream');
 
+var upto = require('./lib/upto');
+
 module.exports = function (streamMap) {
     var tr = trumpet();
-    var output = tr.pipe(through(write, end)).pipe(pause());
-    
-    var pos = 0;
-    function write (buf) {
-        pos += buf.length;
-        this.emit('data', buf);
-    }
-    
-    function end () {}
+    var output = tr.pipe(upto());
     
     var streams = Object.keys(streamMap).reduce(function (acc, key) {
         var stream = streamMap[key].pipe(pause());
@@ -22,22 +15,35 @@ module.exports = function (streamMap) {
         return acc;
     }, {});
     
+    var active = false;
+    var stack = [];
+    
     Object.keys(streamMap).forEach(function (key) {
-        tr.update(key, function (node) {
+        tr.update(key, function () { onupdate(false); return '' });
+        
+        function onupdate (shifted) {
+            if (active) return stack.push((function (pos) {
+                output.to(pos);
+                return onupdate;
+            })(tr.parser.position));
+            
             streams[key].on('data', function (buf) {
                 output.emit('data', buf);
             });
+            
             streams[key].on('end', function (buf) {
-                output.resume();
+                active = false;
+                if (stack.length) {
+                    stack.shift()(true)
+                }
+                else output.to(-1)
             });
+            
+            active = true;
+            
+            if (!shifted) output.to(tr.parser.position);
             streams[key].resume();
-            
-            process.nextTick(function () {
-                output.pause();
-            });
-            
-            return '';
-        });
+        }
     });
     
     return duplexer(tr, output);
