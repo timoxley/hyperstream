@@ -6,11 +6,15 @@ var concatStream = require('concat-stream');
 
 module.exports = function (streamMap) {
     var tr = trumpet();
-    var output = tr.pipe(through(null, end)).pipe(pause());
+    var output = tr.pipe(through(write, end)).pipe(pause());
     
-    function end () {
-        this.emit('end');
+    var pos = 0;
+    function write (buf) {
+        pos += buf.length;
+        this.emit('data', buf);
     }
+    
+    function end () {}
     
     var streams = Object.keys(streamMap).reduce(function (acc, key) {
         var stream = streamMap[key].pipe(pause());
