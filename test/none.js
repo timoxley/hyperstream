@@ -8,7 +8,7 @@ var expected = fs.readFileSync(__dirname + '/none/index.html', 'utf8');
 test('glue html streams from disk', function (t) {
     t.plan(1);
     
-    var hs = hyperstream({});
+    var hs = hyperstream();
     var rs = fs.createReadStream(__dirname + '/none/index.html');
     
     var data = '';

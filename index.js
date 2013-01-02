@@ -6,8 +6,13 @@ var concatStream = require('concat-stream');
 var upto = require('./lib/upto');
 
 module.exports = function (streamMap) {
+    if (!streamMap) streamMap = {};
+    
     var tr = trumpet();
     var output = tr.pipe(upto());
+    tr.on('end', function () {
+        if (!active && stack.length === 0) output.to(-1);
+    });
     
     var streams = Object.keys(streamMap).reduce(function (acc, key) {
         var stream = streamMap[key].pipe(pause());
