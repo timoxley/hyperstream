@@ -1,13 +1,26 @@
+var test = require('tap').test;
 var hyperstream = require('hyperstream');
-var fs = require('fs');
 var Stream = require('stream');
 
-var hs = hyperstream({
-    '#a': createAzStream(),
-    '#b': fs.createReadStream(__dirname + '/b.html')
+var fs = require('fs');
+var expected = fs.readFileSync(__dirname + '/az/expected.html');
+
+test('fs stream and a slow stream', function (t) {
+    t.plan(1);
+    
+    var hs = hyperstream({
+        '#a': createAzStream(),
+        '#b': fs.createReadStream(__dirname + '/az/b.html')
+    });
+    var data = '';
+    hs.on('data', function (buf) { data += buf });
+    hs.on('end', function () {
+        t.equal(data, expected);
+    });
+    
+    var rs = fs.createReadStream(__dirname + '/az/index.html');
+    rs.pipe(hs);
 });
-var rs = fs.createReadStream(__dirname + '/index.html');
-rs.pipe(hs).pipe(process.stdout);
 
 function createAzStream () {
     var rs = new Stream;
@@ -19,6 +32,6 @@ function createAzStream () {
             clearInterval(iv);
             rs.emit('end');
         }
-    }, 50);
+    }, 25);
     return rs;
 }
