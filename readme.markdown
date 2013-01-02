@@ -2,6 +2,8 @@
 
 stream html into html at a css selector
 
+[![build status](https://secure.travis-ci.org/substack/hyperstream.png)](http://travis-ci.org/substack/hyperstream)
+
 # example
 
 ``` js
