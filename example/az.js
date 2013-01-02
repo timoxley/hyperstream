@@ -1,4 +1,4 @@
-var hyperstream = require('hyperstream');
+var hyperstream = require('../');
 var fs = require('fs');
 var Stream = require('stream');
 

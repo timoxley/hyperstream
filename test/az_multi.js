@@ -1,5 +1,5 @@
 var test = require('tap').test;
-var hyperstream = require('hyperstream');
+var hyperstream = require('../');
 var Stream = require('stream');
 
 var fs = require('fs');

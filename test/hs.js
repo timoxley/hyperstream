@@ -1,6 +1,6 @@
 var test = require('tap').test;
 var through = require('through');
-var hyperstream = require('hyperstream');
+var hyperstream = require('../');
 
 var fs = require('fs');
 var expected = fs.readFileSync(__dirname + '/hs/expected.html', 'utf8');
