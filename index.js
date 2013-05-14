@@ -39,18 +39,16 @@ module.exports = function (streamMap) {
         function onupdate (pos) {
             if (active) return stack.push(function () { onupdate(pos) });
             
-            streams[key].on('data', function (buf) {
-                output.emit('data', buf);
-            });
-            
-            streams[key].on('end', function (buf) {
-                active = false;
-                if (stack.length) {
-                    stack.shift()()
+            streams[key].pipe(through(
+                function (buf) { output.queue(buf) },
+                function () {
+                    active = false;
+                    if (stack.length) {
+                        stack.shift()()
+                    }
+                    else output.to(-1)
                 }
-                else output.to(-1)
-            });
-            
+            ));
             active = true;
             
             output.to(pos);
