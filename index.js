@@ -1,5 +1,5 @@
 var trumpet = require('trumpet');
-var pause = require('pause-stream');
+var through = require('through');
 var duplexer = require('duplexer');
 
 var upto = require('./lib/upto');
@@ -15,7 +15,7 @@ module.exports = function (streamMap) {
     
     var streams = Object.keys(streamMap).reduce(function (acc, key) {
         if (streamMap[key] && typeof streamMap[key] === 'object') {
-            var stream = streamMap[key].pipe(pause());
+            var stream = streamMap[key].pipe(through());
             acc[key] = stream.pause();
         }
         return acc;
