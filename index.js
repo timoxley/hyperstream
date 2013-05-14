@@ -8,7 +8,9 @@ module.exports = function (streamMap) {
     if (!streamMap) streamMap = {};
     
     var tr = trumpet();
+    
     var output = tr.pipe(upto());
+    tr.on('data', function () {});
     tr.on('end', function () {
         if (!active && stack.length === 0) output.to(-1);
     });
@@ -17,6 +19,12 @@ module.exports = function (streamMap) {
         if (streamMap[key] && typeof streamMap[key] === 'object') {
             var stream = streamMap[key].pipe(through());
             acc[key] = stream.pause();
+        }
+        if (!streamMap[key] || typeof streamMap[key] !== 'object') {
+            var stream = through();
+            acc[key] = stream.pause();
+            stream.queue(streamMap[key]);
+            stream.queue(null);
         }
         return acc;
     }, {});
@@ -27,9 +35,6 @@ module.exports = function (streamMap) {
     Object.keys(streamMap).forEach(function (key) {
         if (typeof streamMap[key] === 'function') {
             return tr.update(key, streamMap[key]);
-        }
-        if (!streamMap[key] || typeof streamMap[key] !== 'object') {
-            return tr.update(key, String(streamMap[key]));
         }
         
         tr.select(key, function () {
