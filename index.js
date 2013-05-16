@@ -23,13 +23,10 @@ module.exports = function (streamMap) {
         }
         if (typeof sm === 'function') {
         }
-        if (!sm || typeof sm !== 'object') {
+        if (!sm || typeof sm !== 'object' && typeof sm !== 'function') {
             var stream = through();
             acc[key] = stream.pause();
-            if (typeof sm === 'function') {
-                stream.queue(String(
-            }
-            else stream.queue(String(sm));
+            stream.queue(String(sm));
             stream.queue(null);
         }
         
@@ -40,8 +37,13 @@ module.exports = function (streamMap) {
     var stack = [];
     
     Object.keys(streamMap).forEach(function (key) {
-        tr.select(key, function () {
-            onupdate(tr.parser.position);
+        tr.select(key, function (node) {
+            if (typeof streamMap[key] === 'function') {
+                node.update(streamMap[key]);
+            }
+            else {
+                onupdate(tr.parser.position);
+            }
         });
         
         function onupdate (pos) {
