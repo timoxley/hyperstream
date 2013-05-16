@@ -1,6 +1,6 @@
 {
     "name" : "hyperstream",
-    "version" : "0.1.1",
+    "version" : "0.1.2",
     "description" : "stream html into html at a css selector",
     "main" : "index.js",
     "dependencies" : {
