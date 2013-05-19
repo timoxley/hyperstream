@@ -10,15 +10,10 @@ module.exports = function (streamMap) {
     
     var tr = trumpet();
     var output = upto();
-    //var dup = duplexer(tr, output);
     tr.pipe(output);
     var dup = through(
-        function (buf) {
-            tr.write(buf);
-        },
-        function () {
-            tr.end();
-        }
+        function (buf) { tr.write(buf) },
+        function () { tr.end() }
     );
     output.pipe(through(
         function (buf) { dup.queue(buf) },
