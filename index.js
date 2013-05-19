@@ -8,10 +8,9 @@ module.exports = function (streamMap) {
     if (!streamMap) streamMap = {};
     
     var tr = trumpet();
+    
     var output = upto();
-    tr.pipe(output);
-    var dup = duplexer(tr, output);
-    dup.pause = function () {};
+    var dup = throughout(tr, output);
     
     tr.on('data', function () {});
     tr.on('end', function () {
@@ -32,7 +31,6 @@ module.exports = function (streamMap) {
             stream.queue(String(sm));
             stream.queue(null);
         }
-        
         return acc;
     }, {});
     
@@ -78,3 +76,18 @@ module.exports = function (streamMap) {
     
     return dup;
 };
+
+function throughout (a, b) {
+    a.pipe(through(
+        function (buf) { b.write(buf) },
+        function () { b.end() }
+    ));
+    var dup = duplexer(a, b);
+    dup.on('pause', function () {
+        b.pause();
+    });
+    dup.on('resume', function () {
+        b.resume();
+    });
+    return dup;
+}
