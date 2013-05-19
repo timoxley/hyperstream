@@ -1,7 +1,6 @@
 var trumpet = require('trumpet');
 var through = require('through');
 var duplexer = require('duplexer');
-var resumer = require('resumer');
 
 var upto = require('./lib/upto');
 
@@ -11,14 +10,8 @@ module.exports = function (streamMap) {
     var tr = trumpet();
     var output = upto();
     tr.pipe(output);
-    var dup = through(
-        function (buf) { tr.write(buf) },
-        function () { tr.end() }
-    );
-    output.pipe(through(
-        function (buf) { dup.queue(buf) },
-        function () { dup.queue(null) }
-    ));
+    var dup = duplexer(tr, output);
+    dup.pause = function () {};
     
     tr.on('data', function () {});
     tr.on('end', function () {
