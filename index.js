@@ -1,5 +1,7 @@
 var trumpet = require('trumpet');
 var through = require('through');
+var duplexer = require('duplexer');
+var resumer = require('resumer');
 
 var upto = require('./lib/upto');
 
@@ -7,8 +9,22 @@ module.exports = function (streamMap) {
     if (!streamMap) streamMap = {};
     
     var tr = trumpet();
+    var output = upto();
+    //var dup = duplexer(tr, output);
+    tr.pipe(output);
+    var dup = through(
+        function (buf) {
+            tr.write(buf);
+        },
+        function () {
+            tr.end();
+        }
+    );
+    output.pipe(through(
+        function (buf) { dup.queue(buf) },
+        function () { dup.queue(null) }
+    ));
     
-    var output = tr.pipe(upto());
     tr.on('data', function () {});
     tr.on('end', function () {
         if (!active && stack.length === 0) output.to(-1);
@@ -66,15 +82,6 @@ module.exports = function (streamMap) {
             });
         }
     });
-    
-    var dup = through(
-        function (buf) { tr.queue(buf) },
-        function () { tr.queue(null) }
-    );
-    output.pipe(through(
-        function (buf) { dup.queue(buf) },
-        function () { dup.queue(null) }
-    ));
     
     dup.select = tr.select.bind(tr);
     dup.update = tr.update.bind(tr);
