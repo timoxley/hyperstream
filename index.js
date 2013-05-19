@@ -1,6 +1,5 @@
 var trumpet = require('trumpet');
 var through = require('through');
-var duplexer = require('duplexer');
 
 var upto = require('./lib/upto');
 
@@ -68,10 +67,19 @@ module.exports = function (streamMap) {
         }
     });
     
-    var dup = duplexer(tr, output);
+    var dup = through(
+        function (buf) { tr.queue(buf) },
+        function () { tr.queue(null) }
+    );
+    output.pipe(through(
+        function (buf) { dup.queue(buf) },
+        function () { dup.queue(null) }
+    ));
+    
     dup.select = tr.select.bind(tr);
     dup.update = tr.update.bind(tr);
     dup.remove = tr.remove.bind(tr);
     dup.replace = tr.replace.bind(tr);
+    
     return dup;
 };
