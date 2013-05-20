@@ -6,7 +6,8 @@
     "dependencies" : {
         "trumpet" : "~0.3.5",
         "duplexer" : "~0.0.2",
-        "through" : "~2.3.4"
+        "through" : "~2.3.4",
+        "throughout" : "~0.0.0"
     },
     "devDependencies" : {
         "tap" : "~0.4.0",
