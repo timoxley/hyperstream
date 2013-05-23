@@ -51,7 +51,9 @@ module.exports = function (streamMap) {
             if (active) return stack.push(function () { onupdate(pos) });
             
             streams[key].pipe(through(
-                function (buf) { output.queue(buf) },
+                function (buf) {
+                    if (buf.length) output.queue(buf)
+                },
                 function () {
                     active = false;
                     if (stack.length) {
