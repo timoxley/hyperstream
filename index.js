@@ -28,7 +28,8 @@ module.exports = function (streamMap) {
         if (!sm || typeof sm !== 'object' && typeof sm !== 'function') {
             var stream = through();
             acc[key] = stream.pause();
-            stream.queue(String(sm));
+            var s = String(sm);
+            if (s.length) stream.queue(s);
             stream.queue(null);
         }
         return acc;
