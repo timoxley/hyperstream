@@ -17,7 +17,7 @@ test('queue an empty string to an http response', function (t) {
     server.listen(function () {
         var port = server.address().port;
         var hq = hyperquest('http://localhost:' + port);
-        hq.pipe(concat(function (err, src) {
+        hq.pipe(concat(function (src) {
             t.equal(String(src), '<div class="a">xyz</div>');
         }));
     });

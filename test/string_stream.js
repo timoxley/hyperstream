@@ -13,7 +13,7 @@ test('string before a stream', function (t) {
         '.b': stream
     });
     var rs = through();
-    rs.pipe(hs).pipe(concat(function (err, src) {
+    rs.pipe(hs).pipe(concat(function (src) {
         t.equal(src, [
             '<div class="a">' + Array(SIZE).join('THEBEST') + '</div>',
             '<div class="b">onetwothreefourfive</div>'
